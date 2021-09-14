@@ -1,5 +1,7 @@
-#Dicom Viewer
+Mobile Dicom Viewer for Android
 
-Simple DICOM Viewer for Android.
+Department of Software, Gachon University
+Undergraduate Project
 
-(work in progress...)
+Now being developed based on
+https://github.com/hannesa2/Dicom-Viewer
