@@ -64,10 +64,10 @@ android {
 dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
-    implementation 'net.rdrei.android.dirchooser:library:2.1@aar'
-    implementation files('libs/imebra_android.jar')
+    implementation 'net.rdrei.android.dirchooser:library:3.2@aar'
+    implementation files('libs/imebra5.3_android.jar')
     implementation project(':libraries:aFileChooser')
     implementation 'junit:junit:4.13.2'
-    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'commons-io:commons-io:20030203.000550'
     implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
 }
