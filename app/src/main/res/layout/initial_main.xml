@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity"
+    android:background="@drawable/bg_get_started2">
+
+    <TextView
+        android:id="@+id/blank"
+        android:layout_width="305dp"
+        android:layout_height="450dp"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="305dp"
+        android:layout_height="67dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginEnd="52dp"
+        android:fontFamily="@font/cookierun"
+        android:lineSpacingExtra="5sp"
+        android:text="This app is for dicom viewer.                      Start by clicking the button below."
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:typeface="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="525dp" />
+
+    <ImageButton
+        android:id="@+id/btn_get_started"
+        android:layout_width="85dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center"
+        android:background="@drawable/get_started_btn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        />
+
+
+</LinearLayout>

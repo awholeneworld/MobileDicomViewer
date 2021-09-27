@@ -3,19 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="info.hannes.dicom.app">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
+        android:label= "@string/app_name"
         android:theme="@style/AppTheme"
         tools:replace="android:theme">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".InitialActivity"
             android:label="@string/app_name">
 
             <intent-filter>
@@ -23,6 +24,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".HomeActivity"/>
 
         <activity
             android:name=".MedicalTestListActivity"
