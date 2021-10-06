@@ -1,12 +1,9 @@
-package info.hannes.dicom.app;
+package info.hannes.dicom.app.trash;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +59,7 @@ public class Patients {
     private void addRecursivelyImagesInDir(Context context, File file) {
         String[] extensions = {"dcm"};
         boolean recursive = true;
-        Collection<File> iterator = FileUtils.listFiles(file, extensions, recursive);
+        /* Collection<File> iterator = FileUtils.listFiles(file, extensions, recursive);
 
         if (iterator.isEmpty()) {
             Toast.makeText(context, "Cannot find any files with .dcm extension!", Toast.LENGTH_SHORT);
@@ -72,5 +69,6 @@ public class Patients {
         for (File f : iterator) {
             addOneImage(f.getAbsolutePath());
         }
+         */
     }
 }

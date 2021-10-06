@@ -1,4 +1,6 @@
-package info.hannes.dicom.app;
+package info.hannes.dicom.app.trash;
+
+import info.hannes.dicom.app.Images;
 
 public class Series {
     private String name;

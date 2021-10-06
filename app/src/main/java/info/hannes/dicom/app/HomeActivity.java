@@ -1,28 +1,34 @@
 package info.hannes.dicom.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class HomeActivity extends AppCompatActivity {
-    ImageButton Diagnose;
-    ImageButton Logout;
-
+    ImageButton diagnose;
+    ImageButton logout;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_main);
 
-        Diagnose = (ImageButton)findViewById(R.id.diagnose);
-        Logout = (ImageButton)findViewById(R.id.logout);
+        diagnose = findViewById(R.id.diagnose);
+        logout = findViewById(R.id.logout);
 
-
-        Logout.setOnClickListener(new View.OnClickListener() {
+        diagnose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finishAffinity();

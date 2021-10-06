@@ -5,10 +5,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import com.imebra.dicom.*;
+import android.widget.ImageView;
+
+import com.imebra.*;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import info.hannes.dicom.app.trash.Patient;
+import info.hannes.dicom.app.trash.Patients;
+import info.hannes.dicom.app.trash.Series;
 
 public class Animation extends Activity {
     private Timer timer;
@@ -77,8 +83,7 @@ public class Animation extends Activity {
 
     private void displayDicomImage(String path) {
         // Open the dicom file from sdcard
-        Stream stream = new Stream();
-        stream.openFileRead(path);
+        FileStreamInput stream = new FileStreamInput(path);
         // Build an internal representation of the Dicom file. Tags larger than 256 bytes
         //  will be loaded on demand from the file
         DataSet dataSet = CodecFactory.load(new StreamReader(stream), 256);
@@ -90,8 +95,8 @@ public class Animation extends Activity {
             ModalityVOILUT modalityVOILUT = new ModalityVOILUT(dataSet);
             if(!modalityVOILUT.isEmpty())
             {
-                Image modalityImage = modalityVOILUT.allocateOutputImage(image, image.getSizeX(), image.getSizeY());
-                modalityVOILUT.runTransform(image, 0, 0, image.getSizeX(), image.getSizeY(), modalityImage, 0, 0);
+                MutableImage modalityImage = modalityVOILUT.allocateOutputImage(image, image.getWidth(), image.getHeight());
+                modalityVOILUT.runTransform(image, 0, 0, image.getWidth(), image.getHeight(), modalityImage, 0, 0);
                 image = modalityImage;
             }
         }
@@ -99,7 +104,8 @@ public class Animation extends Activity {
         //  an image
         TransformsChain transformsChain = new TransformsChain();
         // Monochromatic image may require a presentation transform to display interesting data
-        if(ColorTransformsFactory.isMonochrome(image.getColorSpace()))
+        /*
+        if (ColorTransformsFactory.isMonochrome(image.getColorSpace()))
         {
             VOILUT voilut = new VOILUT(dataSet);
             int voilutId = voilut.getVOILUTId(0);
@@ -111,13 +117,14 @@ public class Animation extends Activity {
             {
                 // No presentation transform is present: here we calculate the optimal window/width (brightness,
                 //  contrast) and we will use that
-                voilut.applyOptimalVOI(image, 0, 0, image.getSizeX(), image.getSizeY());
+                voilut.getOptimalVOI(image, 0, 0, image.getWidth(), image.getHeight());
             }
             transformsChain.addTransform(voilut);
         }
-        // Let's find the DicomView and se the image
-        DicomView imageView = (DicomView)findViewById(R.id.dicomView);
-        imageView.setImage(image, transformsChain);
+        */
+        // Let's find the DicomView and set the image
+        ImageView imageView = findViewById(R.id.dicomView);
+        //imageView.setImage(image, transformsChain);
     }
 
 }

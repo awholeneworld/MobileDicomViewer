@@ -13,6 +13,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label= "@string/app_name"
         android:theme="@style/AppTheme"
+        android:supportsRtl="true"
+        android:largeHeap="true"
         tools:replace="android:theme">
 
         <activity
@@ -28,23 +30,28 @@
         <activity android:name=".HomeActivity"/>
 
         <activity
-            android:name=".MedicalTestListActivity"
+            android:name=".MainActivity"
+            android:label="@string/app_name">
+        </activity>
+
+        <activity
+            android:name=".trash.MedicalTestListActivity"
             android:label="Medical Tests"
             android:parentActivityName=".MainActivity" />
 
         <activity
-            android:name=".SeriesListActivity"
+            android:name=".trash.SeriesListActivity"
             android:label="Series"
-            android:parentActivityName=".MedicalTestListActivity" />
+            android:parentActivityName=".trash.MedicalTestListActivity" />
 
         <activity
             android:name=".ScreenSlideActivity"
             android:label="@string/title_screen_slide"
-            android:parentActivityName=".SeriesListActivity"
+            android:parentActivityName=".trash.SeriesListActivity"
             android:uiOptions="splitActionBarWhenNarrow">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".SeriesListActivity" />
+                android:value=".trash.SeriesListActivity" />
         </activity>
     </application>
 

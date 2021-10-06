@@ -1,4 +1,4 @@
-package info.hannes.dicom.app;
+package info.hannes.dicom.app.trash;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -9,8 +9,10 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public class MedicalTestListActivity extends ListActivity {
+import info.hannes.dicom.app.R;
+import info.hannes.dicom.app.ScreenSlideActivity;
 
+public class SeriesListActivity extends ListActivity{
     private Patient patient;
 
     /**
@@ -19,6 +21,7 @@ public class MedicalTestListActivity extends ListActivity {
      * android.content.res.Resources}.
      */
     private static Sample[] mSamples;
+    private String medicalTestName;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,15 +30,16 @@ public class MedicalTestListActivity extends ListActivity {
         if (extras != null) {
             String patientName = extras.getString("patient_name");
             patient = Patients.getInstance().getPatient(patientName);
+            medicalTestName = extras.getString("medical_test");
         }
 
-        setContentView(R.layout.medical_test_list);
+        setContentView(R.layout.series_list);
 
         // Instantiate the list of samples.
 
         ArrayList<Sample> samples = new ArrayList<>();
-        for (MedicalTest test : patient.getMedicalTests().values()) {
-            samples.add(new Sample(test.getName(), SeriesListActivity.class));
+        for (Series s : patient.getAllSeries(medicalTestName).values()) {
+            samples.add(new Sample(s.getName(), ScreenSlideActivity.class));
         }
 
         mSamples = samples.toArray(new Sample[samples.size()]);
@@ -48,9 +52,10 @@ public class MedicalTestListActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView listView, View view, int position, long id) {
         // Launch the sample associated with this list position.
-        Intent intent = new Intent(MedicalTestListActivity.this, mSamples[position].getActivityClass());
-        intent.putExtra("medical_test", mSamples[position].getTitle());
+        Intent intent = new Intent(SeriesListActivity.this, mSamples[position].getActivityClass());
+        intent.putExtra("series_name", mSamples[position].getTitle());
         intent.putExtra("patient_name", patient.getName());
+        intent.putExtra("medical_test", medicalTestName);
         startActivity(intent);
     }
 }

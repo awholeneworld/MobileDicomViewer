@@ -1,9 +1,6 @@
-package info.hannes.dicom.app;
+package info.hannes.dicom.app.trash;
 
-import com.imebra.dicom.CodecFactory;
-import com.imebra.dicom.DataSet;
-import com.imebra.dicom.Stream;
-import com.imebra.dicom.StreamReader;
+import com.imebra.*;
 
 public class DicomData {
     private String patientName;
@@ -14,15 +11,14 @@ public class DicomData {
     public DicomData(String path) {
         this.path = path;
 
-        Stream stream = new Stream();
-        stream.openFileRead(path);
+        FileStreamInput stream = new FileStreamInput(path);
         // Build an internal representation of the Dicom file. Tags larger than 256 bytes
         //  will be loaded on demand from the file
         DataSet dataSet = CodecFactory.load(new StreamReader(stream), 256);
 
-        this.patientName = dataSet.getString(0x0010, 0, 0x0010, 0);
-        this.medicalTestName = dataSet.getString(0x0008, 0, 0x1030, 0);
-        this.seriesName = dataSet.getString(0x0008,0,0x103E,0);
+        this.patientName = dataSet.getString(dataSet.getTags().get(0), 0, "0x0010");
+        this.medicalTestName = dataSet.getString(dataSet.getTags().get(1), 0, "0x1030");
+        this.seriesName = dataSet.getString(dataSet.getTags().get(2), 0, "0x103E");
     }
 
     public String getPatientName() {

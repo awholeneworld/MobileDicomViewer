@@ -22,11 +22,10 @@
                 android:id="@+id/play_animation"
                 android:text="@string/animation"/>
 
-        <com.imebra.dicom.DicomView
+        <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageView"/>
-
 
     </LinearLayout>
 

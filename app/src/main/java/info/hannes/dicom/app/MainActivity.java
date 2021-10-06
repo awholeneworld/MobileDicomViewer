@@ -1,128 +1,138 @@
 package info.hannes.dicom.app;
 
-
-import android.app.ListActivity;
-import android.content.ActivityNotFoundException;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Toast;
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.Target;
-import com.github.amlcurran.showcaseview.targets.ViewTarget;
-import com.ipaulpro.afilechooser.utils.FileUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import androidx.appcompat.app.AppCompatActivity;
 
-/**
- * The launchpad activity for this sample project. This activity launches other activities that
- * demonstrate implementations of common animations.
- */
-public class MainActivity extends ListActivity {
+import com.imebra.CodecFactory;
+import com.imebra.ColorTransformsFactory;
+import com.imebra.DataSet;
+import com.imebra.DrawBitmap;
+import com.imebra.Image;
+import com.imebra.Memory;
+import com.imebra.PatientName;
+import com.imebra.PipeStream;
+import com.imebra.StreamReader;
+import com.imebra.TagId;
+import com.imebra.TransformsChain;
+import com.imebra.VOILUT;
+import com.imebra.drawBitmapType_t;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+
+public class MainActivity extends AppCompatActivity {
+    private ImageView mImageView; // Used to display the image
+    private TextView mTextView;  // Used to display the patient name
     private static final int REQUEST_CODE = 6384; // onActivityResult request
     private static final String TAG = "FileChooserExample";
 
-    /**
-     * The collection of all samples in the app. This gets instantiated in {@link
-     * #onCreate(android.os.Bundle)} because the {@link Sample} constructor needs access to {@link
-     * android.content.res.Resources}.
-     */
-    private static Sample[] mSamples;
-
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.loadLibrary("imebra_lib");
-
         setContentView(R.layout.activity_main);
 
-        // Instantiate the list of samples.
-        instantiateList();
+        // First thing: Load the Imebra library
+        System.loadLibrary("imebra_lib");
 
-        final Button button = findViewById(R.id.choose_file_button);
-        button.setOnClickListener(new View.OnClickListener() {
+        // We will use the ImageView widget to display the DICOM image
+        mImageView = findViewById(R.id.imageView);
+        mTextView = findViewById(R.id.textView);
+
+        Button loadButton = findViewById(R.id.choose_file_button);
+        loadButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Perform action on click
                 Toast.makeText(MainActivity.this, "choose file", Toast.LENGTH_SHORT).show();
-                showChooser();
+                // get via onActivityResult()
+                Intent intent = new Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select a DICOM file"), 123);
             }
         });
-
-        Target viewTarget = new ViewTarget(R.id.choose_file_button, this);
-        new ShowcaseView.Builder(this, true)
-                .setTarget(viewTarget)
-                .setContentTitle(R.string.title_single_shot)
-                .setContentText(R.string.R_string_desc_single_shot)
-                .singleShot(42)
-                .build();
-
-    }
-
-    private void instantiateList() {
-        Map<String, Patient> patients = Patients.getInstance().getAllPatients();
-        List<Sample> samples = new ArrayList<>();
-        for (Patient patient : patients.values()) {
-            samples.add(new Sample(patient.getName(), MedicalTestListActivity.class));
-        }
-        mSamples = samples.toArray(new Sample[samples.size()]);
-
-        setListAdapter(new ArrayAdapter<Sample>(this,
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                mSamples));
-    }
-
-    @Override
-    protected void onListItemClick(ListView listView, View view, int position, long id) {
-        // Launch the sample associated with this list position.
-        Intent intent = new Intent(MainActivity.this, mSamples[position].getActivityClass());
-        intent.putExtra("patient_name", mSamples[position].getTitle());
-        startActivity(intent);
-    }
-
-    private void showChooser() {
-        // Use the GET_CONTENT intent from the utility class
-        Intent target = FileUtils.createGetContentIntent();
-        // Create the chooser Intent
-        Intent intent = Intent.createChooser(
-                target, getString(R.string.chooser_title));
-        try {
-            startActivityForResult(intent, REQUEST_CODE);
-        } catch (ActivityNotFoundException e) {
-            // The reason for the existence of aFileChooser
-        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE:
-                // If the file selection was successful
-                if (resultCode == RESULT_OK) {
-                    if (data != null) {
-                        // Get the URI of the selected file
-                        final Uri uri = data.getData();
-                        Log.i(TAG, "Uri = " + uri.toString());
-                        try {
-                            // Get the file path from the URI
-                            final String path = FileUtils.getPath(this, uri);
-                            Toast.makeText(MainActivity.this,
-                                    "File Selected: " + path, Toast.LENGTH_LONG).show();
-                            Patients.getInstance().addPatient(path, this);
-                            instantiateList();
-                        } catch (Exception e) {
-                            Log.e("FileSelectorTest", "File select error", e);
-                        }
-                    }
-                }
-                break;
-        }
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 123 && resultCode == RESULT_OK) {
+            try {
+
+                CodecFactory.setMaximumImageSize(8000, 8000);
+
+                // Get the URI of selected file.
+                Uri selectedfile = data.getData();
+                if (selectedfile == null) {
+                    return;
+                }
+
+                // Then open an InputStream.
+                InputStream stream = getContentResolver().openInputStream(selectedfile);
+
+                // The PipeStream allows to use files on Google Drive or other providers as well.
+                PipeStream imebraPipe = new PipeStream(32000);
+
+                // Launch a separate thread that reads from the InputStream
+                // and push the data to the Pipe.
+                Thread pushThread = new Thread(new PushToImebraPipe(imebraPipe, stream));
+                pushThread.start();
+
+                // The CodecFactory will read from the Pipe which is fed by the thread launched above.
+                // We could just get a file's name to it but this would limit what we can read to only local files.
+                DataSet loadDataSet = CodecFactory.load(new StreamReader(imebraPipe.getStreamInput()));
+
+                // Get the first frame from the dataset
+                // after the proper modality transforms have been applied.
+                Image dicomImage = loadDataSet.getImageApplyModalityTransform(0);
+
+                TransformsChain chain = new TransformsChain();
+
+                if (ColorTransformsFactory.isMonochrome(dicomImage.getColorSpace())) {
+                    VOILUT voilut = new VOILUT(VOILUT.getOptimalVOI(dicomImage, 0, 0, dicomImage.getWidth(), dicomImage.getHeight()));
+                    chain.addTransform(voilut);
+                }
+
+                // Build a stream of bytes that can be handled by android's Bitmap class using a DrawBitmap
+                DrawBitmap drawBitmap = new DrawBitmap(chain);
+                Memory memory = drawBitmap.getBitmap(dicomImage, drawBitmapType_t.drawBitmapRGBA, 4);
+
+                // Build the android's Bitmap object from the raw bytes returned by DrawBitmap.
+                Bitmap renderBitmap = Bitmap.createBitmap((int)dicomImage.getWidth(), (int)dicomImage.getHeight(), Bitmap.Config.ARGB_8888);
+                byte[] memoryByte = new byte[(int)memory.size()];
+                memory.data(memoryByte);
+                ByteBuffer byteBuffer = ByteBuffer.wrap(memoryByte);
+                renderBitmap.copyPixelsFromBuffer(byteBuffer);
+
+                // Update the image
+                mImageView.setImageBitmap(renderBitmap);
+                mImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                // Update the text with the patient name
+                String patientName = loadDataSet.getPatientName(new TagId(0x10,0x10),0,
+                        new PatientName("Undefined", "", ""))
+                        .getAlphabeticRepresentation();
+                if (patientName.length() != 0)
+                    mTextView.setText(patientName);
+
+            } catch(IOException e) {
+                AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+                dlgAlert.setMessage(e.getMessage());
+                dlgAlert.setTitle("Error");
+                dlgAlert.setPositiveButton("OK", (dialog, which) -> {
+                    //dismiss the dialog
+                });
+                dlgAlert.setCancelable(true);
+                dlgAlert.create().show();
+            }
+        }
     }
 }

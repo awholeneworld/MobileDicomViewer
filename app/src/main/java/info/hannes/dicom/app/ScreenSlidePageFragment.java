@@ -9,20 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
-import com.imebra.dicom.CodecFactory;
-import com.imebra.dicom.ColorTransformsFactory;
-import com.imebra.dicom.DataSet;
-import com.imebra.dicom.DicomView;
-import com.imebra.dicom.Image;
-import com.imebra.dicom.ModalityVOILUT;
-import com.imebra.dicom.Stream;
-import com.imebra.dicom.StreamReader;
-import com.imebra.dicom.TransformsChain;
-import com.imebra.dicom.VOILUT;
+import com.imebra.*;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import info.hannes.dicom.app.trash.Patients;
+import info.hannes.dicom.app.trash.Series;
 
 public class ScreenSlidePageFragment extends Fragment {
     /**
@@ -45,7 +40,7 @@ public class ScreenSlidePageFragment extends Fragment {
     private MyHandler handler;
     private Images    images;
 
-    private DicomView imageView;
+    private ImageView imageView;
     private boolean animationRunning = false;
     private Series series;
 
@@ -124,8 +119,7 @@ public class ScreenSlidePageFragment extends Fragment {
 
     private void displayDicomImage(String path) {
         // Open the dicom file from sdcard
-        Stream stream = new Stream();
-        stream.openFileRead(path);
+        FileStreamInput stream = new FileStreamInput(path);
         // Build an internal representation of the Dicom file. Tags larger than 256 bytes
         //  will be loaded on demand from the file
         DataSet dataSet = CodecFactory.load(new StreamReader(stream), 256);
@@ -135,21 +129,22 @@ public class ScreenSlidePageFragment extends Fragment {
         if (ColorTransformsFactory.isMonochrome(image.getColorSpace())) {
             ModalityVOILUT modalityVOILUT = new ModalityVOILUT(dataSet);
             if (!modalityVOILUT.isEmpty()) {
-                Image modalityImage = modalityVOILUT.allocateOutputImage(image, image.getSizeX(), image.getSizeY());
-                modalityVOILUT.runTransform(image, 0, 0, image.getSizeX(), image.getSizeY(), modalityImage, 0, 0);
+                MutableImage modalityImage = modalityVOILUT.allocateOutputImage(image, image.getWidth(), image.getHeight());
+                modalityVOILUT.runTransform(image, 0, 0, image.getWidth(), image.getHeight(), modalityImage, 0, 0);
                 image = modalityImage;
             }
         }
 
-        String patientName = dataSet.getString(0x0010, 0, 0x0010, 0);
-        Log.i("patient name from dcm", patientName);
-        String studyDesc = dataSet.getString(0x0008, 0, 0x1030, 0);
-        String seriesDesc = dataSet.getString(0x0008, 0, 0x103E, 0);
+        //String patientName = dataSet.getString(0x0010, 0, 0x0010);
+        //Log.i("patient name from dcm", patientName);
+        //String studyDesc = dataSet.getString(0x0008, 0, 0x1030);
+        //String seriesDesc = dataSet.getString(0x0008, 0, 0x103E);
 
         // Allocate a transforms chain: contains all the transforms to execute before displaying
         //  an image
         TransformsChain transformsChain = new TransformsChain();
         // Monochromatic image may require a presentation transform to display interesting data
+        /*
         if (ColorTransformsFactory.isMonochrome(image.getColorSpace())) {
             VOILUT voilut = new VOILUT(dataSet);
             int voilutId = voilut.getVOILUTId(0);
@@ -158,12 +153,14 @@ public class ScreenSlidePageFragment extends Fragment {
             } else {
                 // No presentation transform is present: here we calculate the optimal window/width (brightness,
                 //  contrast) and we will use that
-                voilut.applyOptimalVOI(image, 0, 0, image.getSizeX(), image.getSizeY());
+                voilut.getOptimalVOI(image, 0, 0, image.getWidth(), image.getHeight());
             }
             transformsChain.addTransform(voilut);
         }
-        // Let's find the DicomView and se the image
-        imageView.setImage(image, transformsChain);
+         */
+        // Let's find the DicomView and set the image
+        DrawBitmap bitmap = new DrawBitmap(transformsChain);
+        //imageView.setImageDrawable(bitmap.getBitmap(image, drawBitmapType_t.drawBitmapRGB, 4));
     }
 
     /**

@@ -1,4 +1,4 @@
-package info.hannes.dicom.app;
+package info.hannes.dicom.app.trash;
 
 import java.util.HashMap;
 import java.util.Map;
