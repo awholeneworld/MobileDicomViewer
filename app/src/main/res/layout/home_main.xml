@@ -7,6 +7,15 @@
     android:background="#4AC0F4"
     android:orientation="vertical">
 
+
+    <pl.droidsonroids.gif.GifImageView
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:background="#4BC0DF"
+        android:src="@drawable/doctor2"></pl.droidsonroids.gif.GifImageView>
+
+
+
     <TextView
         android:id="@+id/after"
         android:layout_width="match_parent"
