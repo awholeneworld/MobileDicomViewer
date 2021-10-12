@@ -134,5 +134,12 @@ public class MainActivity extends AppCompatActivity {
                 dlgAlert.create().show();
             }
         }
+
+    }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
