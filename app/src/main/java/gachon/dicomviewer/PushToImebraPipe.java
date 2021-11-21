@@ -1,4 +1,4 @@
-package info.hannes.dicom.app;
+package gachon.dicomviewer;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package info.hannes.dicom.app;
+package gachon.dicomviewer;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,7 +23,7 @@ public class HomeActivity extends AppCompatActivity {
         diagnose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(getApplicationContext(), FileChooseActivity.class);
                 startActivity(intent);
                 finish();
             }

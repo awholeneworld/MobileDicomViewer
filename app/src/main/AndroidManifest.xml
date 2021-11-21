@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="info.hannes.dicom.app">
+    package="gachon.dicomviewer">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -17,49 +16,30 @@
         android:largeHeap="true"
         tools:replace="android:theme">
 
-        <activity android:name=".SplashActivity"
+        <activity android:name="gachon.dicomviewer.SplashActivity"
             android:screenOrientation="portrait">
+
             <intent-filter>
+
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
+
         </activity>
 
+        <activity android:name="gachon.dicomviewer.HomeActivity">
+
+        </activity>
+
+        <activity android:name="gachon.dicomviewer.FileChooseActivity">
+
+        </activity>
 
         <activity
-            android:name=".InitialActivity"
+            android:name="gachon.dicomviewer.DICOMViewActivity"
             android:label="@string/app_name">
-
         </activity>
-
-        <activity android:name=".HomeActivity"/>
-
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name">
-        </activity>
-
-
-        <activity
-            android:name=".trash.MedicalTestListActivity"
-            android:label="Medical Tests"
-            android:parentActivityName=".MainActivity" />
-
-        <activity
-            android:name=".trash.SeriesListActivity"
-            android:label="Series"
-            android:parentActivityName=".trash.MedicalTestListActivity" />
-
-        <activity
-            android:name=".ScreenSlideActivity"
-            android:label="@string/title_screen_slide"
-            android:parentActivityName=".trash.SeriesListActivity"
-            android:uiOptions="splitActionBarWhenNarrow">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".trash.SeriesListActivity" />
-        </activity>
-
 
     </application>
 

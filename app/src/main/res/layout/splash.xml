@@ -8,7 +8,6 @@
     android:background="@drawable/bg_color"
     android:backgroundTint="#476E8B">
 
-
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
@@ -26,9 +25,8 @@
         android:layout_gravity="center"
         android:layout_marginTop="230dp"
         android:src="@drawable/load"
-        tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="117dp"
-        tools:layout_editor_absoluteY="304dp"></pl.droidsonroids.gif.GifImageView>
-
+        tools:layout_editor_absoluteY="304dp"
+        tools:ignore="MissingConstraints" />
 
 </LinearLayout>
