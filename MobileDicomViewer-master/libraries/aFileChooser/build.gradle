@@ -1,0 +1,21 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion defaultCompileSdkVersion
+
+    defaultConfig {
+        minSdkVersion defaultMinSdkVersion
+        targetSdkVersion defaultTargetSdkVersion
+        versionCode 1
+        versionName "1.0"
+    }
+
+    lintOptions{
+        disable 'MissingTranslation'
+    }
+}
+
+dependencies {
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+}
