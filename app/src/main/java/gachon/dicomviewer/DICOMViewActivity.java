@@ -21,6 +21,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.ablanco.zoomy.TapListener;
+import com.ablanco.zoomy.Zoomy;
 import com.imebra.CodecFactory;
 import com.imebra.ColorTransformsFactory;
 import com.imebra.DataSet;
@@ -71,6 +73,19 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         mIndexTextView = findViewById(R.id.imageIndexView);
         mIndexSeekBar = findViewById(R.id.seriesSeekBar);
         mNavigationBar.setVisibility(View.INVISIBLE);
+
+        Zoomy.Builder builder = new Zoomy.Builder(this)
+                .target(mImageView)
+                .animateZooming(false)
+                .enableImmersiveMode(false)
+                .tapListener(new TapListener() {
+                    @Override
+                    public void onTap(View v) {
+                        Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT);
+                    }
+                });
+
+        builder.register();
 
         // First thing: Load the Imebra library
         System.loadLibrary("imebra_lib");
