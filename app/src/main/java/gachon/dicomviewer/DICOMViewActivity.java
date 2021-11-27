@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -46,6 +47,7 @@ import java.util.Arrays;
 public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
 
     private TextView mTextView; // Used to display the patient name
+    private TextView bTextView; // Used to display the screen brightness
     private ImageView mImageView; // Used to display the image
     private LinearLayout mNavigationBar; // Layout representing the series navigation bar
     private SeekBar mIndexSeekBar; // Series seek bar.
@@ -66,6 +68,8 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
 
         // We will use the ImageView widget to display the DICOM image
         mTextView = findViewById(R.id.textView);
+        bTextView = findViewById(R.id.num);
+        SeekBar seekBar = findViewById(R.id.seekbar);
         mImageView = findViewById(R.id.imageView);
         mNavigationBar = findViewById(R.id.navigationToolbar);
         mPreviousButton = findViewById(R.id.previousImageButton);
@@ -73,6 +77,7 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         mIndexTextView = findViewById(R.id.imageIndexView);
         mIndexSeekBar = findViewById(R.id.seriesSeekBar);
         mNavigationBar.setVisibility(View.INVISIBLE);
+
 
         Zoomy.Builder builder = new Zoomy.Builder(this)
                 .target(mImageView)
@@ -86,6 +91,25 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
                 });
 
         builder.register();
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                setBrightness(i);
+                bTextView.setText("image brightness : " + i);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
 
         // First thing: Load the Imebra library
         System.loadLibrary("imebra_lib");
@@ -201,6 +225,17 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
                 startActivityForResult(Intent.createChooser(intent, "Select a DICOM file"), 123);
             }
         });
+    }
+
+    private void setBrightness(int value) {
+        if (value < 10) {
+            value = 10;
+        } else if (value > 100) {
+            value = 100;
+        }
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.screenBrightness = (float) value / 100;
+        getWindow().setAttributes(params);
     }
 
     @Override
