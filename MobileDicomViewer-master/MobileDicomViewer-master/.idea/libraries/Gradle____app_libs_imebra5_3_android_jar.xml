@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: ./app/libs/imebra5.3_android.jar">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/app/libs/imebra5.3_android.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
