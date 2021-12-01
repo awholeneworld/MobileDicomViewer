@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@drawable/bg_color"
-    android:backgroundTint="#476E8B">
+    android:backgroundTint="#B8E2EB"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_gravity="center"
-        android:text="Dicom Viewer"
+        android:layout_marginTop="16dp"
+        android:text="Gachon Dicom Viewer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints" />
@@ -24,9 +24,9 @@
         android:layout_height="147dp"
         android:layout_gravity="center"
         android:layout_marginTop="230dp"
-        android:src="@drawable/load"
+        android:src="@drawable/splash"
+        tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="117dp"
-        tools:layout_editor_absoluteY="304dp"
-        tools:ignore="MissingConstraints" />
+        tools:layout_editor_absoluteY="304dp" />
 
 </LinearLayout>
