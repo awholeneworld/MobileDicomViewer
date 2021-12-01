@@ -10,14 +10,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import androidx.core.app.ActivityCompat;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import com.imebra.*;
@@ -255,10 +253,10 @@ public class FileChooseActivity extends ListActivity {
                 return o1.toLowerCase().compareTo(o2.toLowerCase());
             // Compare file numbers
             else {
-                int num1 = Integer.parseInt(strNum1);
-                int num2 = Integer.parseInt(strNum2);
+                long num1 = Long.parseLong(strNum1);
+                long num2 = Long.parseLong(strNum2);
 
-                return num1 - num2;
+                return (int)(num1 - num2);
             }
         });
         fileList.sort((o1, o2) -> {
@@ -270,10 +268,10 @@ public class FileChooseActivity extends ListActivity {
                 return o1.toLowerCase().compareTo(o2.toLowerCase());
             // Compare file numbers
             else {
-                int num1 = Integer.parseInt(strNum1);
-                int num2 = Integer.parseInt(strNum2);
+                long num1 = Long.parseLong(strNum1);
+                long num2 = Long.parseLong(strNum2);
 
-                return num1 - num2;
+                return (int)(num1 - num2);
             }
         });
 

@@ -22,20 +22,30 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.ablanco.zoomy.TapListener;
 import com.ablanco.zoomy.Zoomy;
+import com.imebra.AssociationSCU;
+import com.imebra.CStoreCommand;
 import com.imebra.CodecFactory;
 import com.imebra.ColorTransformsFactory;
 import com.imebra.DataSet;
+import com.imebra.DimseResponse;
+import com.imebra.DimseService;
 import com.imebra.DrawBitmap;
 import com.imebra.Image;
 import com.imebra.Memory;
 import com.imebra.PatientName;
 import com.imebra.PipeStream;
+import com.imebra.PresentationContext;
+import com.imebra.PresentationContexts;
 import com.imebra.StreamReader;
+import com.imebra.StreamWriter;
+import com.imebra.TCPActiveAddress;
+import com.imebra.TCPStream;
 import com.imebra.TagId;
 import com.imebra.TransformsChain;
 import com.imebra.VOILUT;
+import com.imebra.dimseCommandPriority_t;
+import com.imebra.dimseStatus_t;
 import com.imebra.drawBitmapType_t;
 
 import java.io.File;
@@ -54,6 +64,7 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
     private Button mPreviousButton; // Previous button.
     private Button mNextButton; // Next button.
     private TextView mIndexTextView; // Image index TextView.
+    private DataSet loadedData; // A single DICOM file container
     private DICOMFileLoader mDICOMFileLoader = null; // DICOM file loader thread.
     private Uri mCurrentUri = null; // Current uri of DICOM file to process
     private File[] mFileArray = null; // The array of DICOM image in the folder.
@@ -83,12 +94,7 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
                 .target(mImageView)
                 .animateZooming(false)
                 .enableImmersiveMode(false)
-                .tapListener(new TapListener() {
-                    @Override
-                    public void onTap(View v) {
-                        Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT);
-                    }
-                });
+                .tapListener(v -> Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_SHORT));
 
         builder.register();
 
@@ -157,10 +163,10 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
                     return str1.toLowerCase().compareTo(str2.toLowerCase());
                 // Compare file numbers
                 else {
-                    int num1 = Integer.parseInt(strNum1);
-                    int num2 = Integer.parseInt(strNum2);
+                    long num1 = Long.parseLong(strNum1);
+                    long num2 = Long.parseLong(strNum2);
 
-                    return num1 - num2;
+                    return (int)(num1 - num2);
                 }
             });
 
@@ -216,14 +222,32 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         // Set the seek bar change index listener
         mIndexSeekBar.setOnSeekBarChangeListener(this);
 
-        Button loadButton = findViewById(R.id.choose_file_button);
-        loadButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Toast.makeText(DICOMViewActivity.this, "choose file", Toast.LENGTH_SHORT).show();
-                // get via onActivityResult()
-                Intent intent = new Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select a DICOM file"), 123);
-            }
+        Button loadButton = findViewById(R.id.send_file_button);
+        loadButton.setOnClickListener(v -> {
+            // TODO: Put your PC IP address which is connected to WiFi.
+            // TODO: Do not commit when your PC IP address is written.
+            TCPStream tcpStream = new TCPStream(new TCPActiveAddress("PC IP ADDRESS", "8104"));
+            StreamReader readSCU = new StreamReader(tcpStream.getStreamInput());
+            StreamWriter writeSCU = new StreamWriter(tcpStream.getStreamOutput());
+
+            PresentationContext context = new PresentationContext("1.2.840.10008.5.1.4.1.1.2");
+            context.addTransferSyntax("1.2.840.10008.1.2.1");
+            PresentationContexts presentationContexts = new PresentationContexts();
+            presentationContexts.addPresentationContext(context);
+
+            AssociationSCU scu = new AssociationSCU("SCU", "XNAT", 1, 1, presentationContexts, readSCU, writeSCU, 0);
+            DimseService dimse = new DimseService(scu);
+
+            CStoreCommand command = new CStoreCommand("1.2.840.10008.5.1.4.1.1.2", dimse.getNextCommandID(), dimseCommandPriority_t.medium,
+                    loadedData.getString(new TagId(0x08, 0x16), 0),
+                    loadedData.getString(new TagId(0x08, 0x18), 0),
+                    "", 0, loadedData);
+
+            dimse.sendCommandOrResponse(command);
+            DimseResponse response = new DimseResponse(dimse.getCStoreResponse(command));
+
+            if (response.getStatus() == dimseStatus_t.success)
+                Toast.makeText(DICOMViewActivity.this, "Success: File is sent!", Toast.LENGTH_LONG).show();
         });
     }
 
@@ -245,6 +269,12 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         // Save the current file name
         String currentFileName = mFileArray[mCurrentFileIndex].getAbsolutePath();
         outState.putString("file_name", currentFileName);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     @Override
@@ -461,7 +491,7 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
 
                         // The CodecFactory will read from the Pipe which is fed by the thread launched above.
                         // We could just get a file's name to it but this would limit what we can read to only local files.
-                        DataSet loadedData = CodecFactory.load(new StreamReader(imebraPipe.getStreamInput()));
+                        loadedData = CodecFactory.load(new StreamReader(imebraPipe.getStreamInput()));
 
                         // Get the first frame from the data
                         // after the proper modality transforms have been applied.

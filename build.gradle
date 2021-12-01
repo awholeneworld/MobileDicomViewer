@@ -6,12 +6,12 @@ buildscript {
         maven {url "https://jitpack.io"}
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.2'
+        classpath 'com.android.tools.build:gradle:7.0.3'
     }
 }
 
 ext {
-    defaultCompileSdkVersion = 28
+    defaultCompileSdkVersion = 31
     defaultMinSdkVersion = 26
     defaultTargetSdkVersion = 28
 }

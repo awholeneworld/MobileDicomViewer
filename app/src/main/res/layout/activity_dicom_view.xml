@@ -57,32 +57,53 @@
             android:background="@android:drawable/ic_media_previous"
             android:onClick="previousImage" />
 
-        <TextView
-            android:id="@+id/imageIndexView"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:gravity="center"
-            android:textSize="15dp"
-            android:text="0" />
-
-        <SeekBar
-            android:id="@+id/seriesSeekBar"
+        <LinearLayout
+            android:id="@+id/seekBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:minWidth="220dp" />
+            android:layout_marginTop="13dp"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/imageCountView"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:gravity="center"
-            android:textSize="15dp"
-            android:text="0" />
+            <SeekBar
+                android:id="@+id/seriesSeekBar"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:minWidth="220dp" />
+
+            <LinearLayout
+                android:id="@+id/numberBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/imageIndexView"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="15dp"
+                    android:text="0" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/imageCountView"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:gravity="center"
+                    android:textSize="15dp"
+                    android:text="0" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/nextImageButton"
@@ -102,12 +123,11 @@
         android:layout_weight="1">
 
         <Button
-            android:id="@+id/choose_file_button"
+            android:id="@+id/send_file_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:contentDescription="Click to load a DICOM File"
-            android:text="@string/choose_a_file" />
+            android:text="Send a file" />
 
     </LinearLayout>
 

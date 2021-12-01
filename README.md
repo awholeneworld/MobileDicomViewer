@@ -11,3 +11,6 @@ which is again based on https://github.com/krris/Dicom-Viewer
 which is again based on https://github.com/nelsonjchen/droid-dicom-viewer  
 - https://github.com/binarno/Imebra-V5-Android-Simple-Dicom-Viewer  
 - https://imebra.com/
+
+## PACS Server used - "XNAT"
+- https://www.xnat.org/

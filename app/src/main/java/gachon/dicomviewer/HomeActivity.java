@@ -2,7 +2,6 @@ package gachon.dicomviewer;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -20,20 +19,13 @@ public class HomeActivity extends AppCompatActivity {
         diagnose = findViewById(R.id.diagnose);
         logout = findViewById(R.id.logout);
 
-        diagnose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), FileChooseActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        diagnose.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), FileChooseActivity.class);
+            startActivity(intent);
         });
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finishAffinity();
-                Toast.makeText(HomeActivity.this,"Thank you for using Dicom Viewer Mobile.",Toast.LENGTH_LONG).show();
-            }
+        logout.setOnClickListener(v -> {
+            finishAffinity();
+            Toast.makeText(HomeActivity.this,"Thank you for using Dicom Viewer Mobile.",Toast.LENGTH_SHORT).show();
         });
     }
 }
