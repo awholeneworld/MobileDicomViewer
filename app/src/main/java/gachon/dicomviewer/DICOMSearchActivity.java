@@ -41,7 +41,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class DICOMSearch extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
+public class DICOMSearchActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
 
     private TextView mTextView; // Used to display the patient name
     private ImageView mImageView; // Used to display the image
@@ -60,7 +60,7 @@ public class DICOMSearch extends AppCompatActivity implements SeekBar.OnSeekBarC
 
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_search);
+        setContentView(R.layout.activity_dicom_search);
 
         // We will use the ImageView widget to display the DICOM image
         mTextView = findViewById(R.id.textView);
@@ -229,7 +229,7 @@ public class DICOMSearch extends AppCompatActivity implements SeekBar.OnSeekBarC
                     .setCancelable(false)
                     .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            DICOMSearch.this.finish();
+                            DICOMSearchActivity.this.finish();
                         }
                     });
 
