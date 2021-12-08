@@ -34,8 +34,8 @@ public class FileChooseActivity extends ListActivity {
     // ID for the onSaveInstanceState.
     private static final String TOP_DIR_ID = "top_directory";
 
-    // Define the progress dialog ID for the caching of DICOM image.
-    private static final short PROGRESS_DIALOG_CACHE = 1;
+    // Specify if the selected menu was a diagnose or search.
+    private boolean isSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +70,10 @@ public class FileChooseActivity extends ListActivity {
                 fill();
             }
         }
+
+        // Get the value whether the selected menu was a search or not
+        Intent intent = getIntent();
+        isSearch = intent.getBooleanExtra("isSearch", false);
     }
 
     @Override
@@ -178,6 +182,7 @@ public class FileChooseActivity extends ListActivity {
                     Intent intent = new Intent(this, DICOMViewActivity.class);
                     intent.putExtra("DICOMFileName", mTopDirectory.getPath() + "/" + itemName);
                     intent.putExtra("FileCount", mTotal);
+                    intent.putExtra("isSearch", isSearch);
                     startActivity(intent);
                 }
 

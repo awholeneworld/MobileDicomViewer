@@ -20,11 +20,13 @@ public class HomeActivity extends AppCompatActivity {
 
         diagnose.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), FileChooseActivity.class);
+            intent.putExtra("isSearch", false);
             startActivity(intent);
         });
 
         search.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), FileChooseActivity.class);
+            intent.putExtra("isSearch", true);
             startActivity(intent);
         });
     }
