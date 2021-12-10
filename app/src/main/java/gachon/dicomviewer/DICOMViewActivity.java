@@ -232,7 +232,7 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         });
 
         // If the selected menu is not search, hide the send button.
-        if (!isSearch) sendButton.setVisibility(View.INVISIBLE);
+        if (!isSearch) sendButton.setVisibility(View.VISIBLE);
         else sendButton.setOnClickListener(v -> {
                 // TODO: Put your PC IP address which is connected to WiFi.
                 // TODO: Do not commit when your PC IP address is written.
