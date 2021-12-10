@@ -273,7 +273,9 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
+        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+        intent.putExtra("isSearch", true);
+        startActivity(intent);
     }
 
     @Override
