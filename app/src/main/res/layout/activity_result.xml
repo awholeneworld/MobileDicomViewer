@@ -1,0 +1,138 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#5A595B"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/light"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/light"
+            android:gravity="center" />
+
+        <Button
+            android:id="@+id/zoom"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/zoom"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_gravity="center" />
+
+                <ImageView
+                    android:id="@+id/result"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_gravity="center" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </FrameLayout>
+
+
+    <LinearLayout
+        android:id="@+id/navigationToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#99808080">
+
+        <Button
+            android:id="@+id/previousImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingBottom="10dp"
+            android:paddingStart="10dp"
+            android:background="@android:drawable/ic_media_previous"
+            android:onClick="previousImage" />
+
+        <LinearLayout
+            android:id="@+id/seekBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+            android:orientation="vertical">
+
+            <SeekBar
+                android:id="@+id/seriesSeekBar"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:minWidth="220dp" />
+
+            <LinearLayout
+                android:id="@+id/numberBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/imageIndexView"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="15dp"
+                    android:text="0" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/imageCountView"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:gravity="center"
+                    android:textSize="15dp"
+                    android:text="0" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/nextImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingBottom="10dp"
+            android:paddingEnd="10dp"
+            android:background="@android:drawable/ic_media_next"
+            android:onClick="nextImage" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
