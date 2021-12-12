@@ -5,15 +5,22 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Button;
@@ -22,7 +29,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.ablanco.zoomy.Zoomy;
 import com.imebra.AssociationSCU;
 import com.imebra.CStoreCommand;
 import com.imebra.CodecFactory;
@@ -33,7 +39,6 @@ import com.imebra.DimseService;
 import com.imebra.DrawBitmap;
 import com.imebra.Image;
 import com.imebra.Memory;
-import com.imebra.PatientName;
 import com.imebra.PipeStream;
 import com.imebra.PresentationContext;
 import com.imebra.PresentationContexts;
@@ -48,17 +53,22 @@ import com.imebra.VOILUT;
 import com.imebra.dimseCommandPriority_t;
 import com.imebra.dimseStatus_t;
 import com.imebra.drawBitmapType_t;
+import com.jsibbold.zoomage.ZoomageView;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
+public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, CompoundButton.OnCheckedChangeListener {
 
+    private static final String TAG = "Touch";
+    @SuppressWarnings("unused")
+    private static final float MIN_ZOOM = 1f, MAX_ZOOM = 1f;
+    private ZoomageView mImageView; // Used to display the image
     private TextView mTextView; // Used to display the patient name
-    private ImageView mImageView; // Used to display the image
     private LinearLayout mNavigationBar; // Layout representing the series navigation bar
     private SeekBar mIndexSeekBar; // Series seek bar.
     private TextView mIndexTextView; // Image index TextView.
@@ -78,12 +88,27 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
     private int windowWidth;
     private int tmpCenter = 0;
     private int tmpWidth = 0;
+    private RadioButton radio_light;
+    private RadioButton radio_zoom;
+    private RadioGroup radioGroup;
+    private Button light; // Control button1
+    private Button zoom; // Contorl button2
+    private CheckBox check_light;
+    private CheckBox check_zoom;
+    Matrix matrix = new Matrix();
+    Matrix savedMatrix = new Matrix();
+    static final int NONE = 0;
+    static final int DRAG = 1;
+    static final int ZOOM = 2;
+    int mode = NONE;
+    PointF start = new PointF();
+    PointF mid = new PointF();
+    float oldDist = 1f;
 
     @SuppressLint("ClickableViewAccessibility")
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_dicom_view);
 
         // We will use the ImageView widget to display the DICOM image
@@ -96,6 +121,18 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         mIndexSeekBar = findViewById(R.id.seriesSeekBar);
         sendButton = findViewById(R.id.send_file_button);
         mNavigationBar.setVisibility(View.INVISIBLE);
+        light = findViewById(R.id.light);
+        zoom = findViewById(R.id.zoom);
+        radio_light = findViewById(R.id.radio_light);
+        radio_zoom = findViewById(R.id.radio_zoom);
+
+
+        radio_light.setOnCheckedChangeListener((CompoundButton.OnCheckedChangeListener) this);
+        radio_zoom.setOnCheckedChangeListener((CompoundButton.OnCheckedChangeListener) this);
+
+        radioGroup = findViewById(R.id.radioGroup);
+        mImageView.setScaleType(ImageView.ScaleType.MATRIX);
+
 
         // First thing: Load the Imebra library
         System.loadLibrary("imebra_lib");
@@ -109,7 +146,7 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         // If the saved instance state is not null get the file name
         if (savedInstanceState != null)
             fileName = savedInstanceState.getString("file_name");
-        // Else get from the intent
+            // Else get from the intent
         else {
             Intent intent = getIntent();
 
@@ -122,9 +159,9 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
 
         // If the file name is null, alert the user and close the activity
         if (fileName == null)
-            Toast.makeText(getApplicationContext(),"[ERROR] Loading file: The file cannot be loaded.\n\n" +
-                            "Cannot retrieve its name.", Toast.LENGTH_LONG).show();
-        // Else load the file
+            Toast.makeText(getApplicationContext(), "[ERROR] Loading file: The file cannot be loaded.\n\n" +
+                    "Cannot retrieve its name.", Toast.LENGTH_LONG).show();
+            // Else load the file
         else {
             // Get the File object for the current file
             mCurrentFile = new File(fileName);
@@ -142,12 +179,12 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
 
                 if (strNum1.equals("") || strNum2.equals(""))
                     return str1.toLowerCase().compareTo(str2.toLowerCase());
-                // Compare file numbers
+                    // Compare file numbers
                 else {
                     long num1 = Long.parseLong(strNum1);
                     long num2 = Long.parseLong(strNum2);
 
-                    return (int)(num1 - num2);
+                    return (int) (num1 - num2);
                 }
             });
 
@@ -171,7 +208,7 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
                 if (mCurrentFileIndex < 0 || mCurrentFileIndex >= mFileArray.length)
                     Toast.makeText(getApplicationContext(), "[ERROR] Loading file: The file cannot be loaded.\n\n" +
                             "The file is not in the directory.", Toast.LENGTH_LONG).show();
-                // Else initialize views and navigation bar
+                    // Else initialize views and navigation bar
                 else {
 
                     // Check if the seek bar must be shown or not
@@ -203,63 +240,124 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         // Set the seek bar change index listener
         mIndexSeekBar.setOnSeekBarChangeListener(this);
 
-        // Set the touch listener for windowing
-        mImageView.setOnTouchListener((view, motionEvent) -> {
-            int action = motionEvent.getAction();
-
-            int curX = (int)motionEvent.getX();
-            int curY = (int)motionEvent.getY();
-
-            if (action == MotionEvent.ACTION_DOWN){
-                tmpCenter = curX;
-                tmpWidth = curY;
-            }
-            else if (action == MotionEvent.ACTION_MOVE){
-                windowCenter += curX - tmpCenter;
-                windowWidth += curY - tmpWidth;
-
-                mBusy = true;
-
-                mDICOMFileLoader = new DICOMFileLoader(loadingHandler, mFileArray[mCurrentFileIndex], true);
-                mDICOMFileLoader.start();
-            }
-            else if (action == MotionEvent.ACTION_UP){
-                tmpCenter = 0;
-                tmpWidth = 0;
-            }
-
-            return true;
-        });
 
         // If the selected menu is not search, hide the send button.
         if (!isSearch) sendButton.setVisibility(View.VISIBLE);
         else sendButton.setOnClickListener(v -> {
-                // TODO: Put your PC IP address which is connected to WiFi.
-                // TODO: Do not commit when your PC IP address is written.
-                TCPStream tcpStream = new TCPStream(new TCPActiveAddress("PC IP ADDRESS", "8104"));
-                StreamReader readSCU = new StreamReader(tcpStream.getStreamInput());
-                StreamWriter writeSCU = new StreamWriter(tcpStream.getStreamOutput());
+            // TODO: Put your PC IP address which is connected to WiFi.
+            // TODO: Do not commit when your PC IP address is written.
+            TCPStream tcpStream = new TCPStream(new TCPActiveAddress("PC IP ADDRESS", "8104"));
+            StreamReader readSCU = new StreamReader(tcpStream.getStreamInput());
+            StreamWriter writeSCU = new StreamWriter(tcpStream.getStreamOutput());
 
-                PresentationContext context = new PresentationContext("1.2.840.10008.5.1.4.1.1.2");
-                context.addTransferSyntax("1.2.840.10008.1.2.1");
-                PresentationContexts presentationContexts = new PresentationContexts();
-                presentationContexts.addPresentationContext(context);
+            PresentationContext context = new PresentationContext("1.2.840.10008.5.1.4.1.1.2");
+            context.addTransferSyntax("1.2.840.10008.1.2.1");
+            PresentationContexts presentationContexts = new PresentationContexts();
+            presentationContexts.addPresentationContext(context);
 
-                AssociationSCU scu = new AssociationSCU("SCU", "XNAT", 1, 1, presentationContexts, readSCU, writeSCU, 0);
-                DimseService dimse = new DimseService(scu);
+            AssociationSCU scu = new AssociationSCU("SCU", "XNAT", 1, 1, presentationContexts, readSCU, writeSCU, 0);
+            DimseService dimse = new DimseService(scu);
 
-                CStoreCommand command = new CStoreCommand("1.2.840.10008.5.1.4.1.1.2", dimse.getNextCommandID(), dimseCommandPriority_t.medium,
-                        loadedData.getString(new TagId(0x08, 0x16), 0),
-                        loadedData.getString(new TagId(0x08, 0x18), 0),
-                        "", 0, loadedData);
+            CStoreCommand command = new CStoreCommand("1.2.840.10008.5.1.4.1.1.2", dimse.getNextCommandID(), dimseCommandPriority_t.medium,
+                    loadedData.getString(new TagId(0x08, 0x16), 0),
+                    loadedData.getString(new TagId(0x08, 0x18), 0),
+                    "", 0, loadedData);
 
-                dimse.sendCommandOrResponse(command);
-                DimseResponse response = new DimseResponse(dimse.getCStoreResponse(command));
+            dimse.sendCommandOrResponse(command);
+            DimseResponse response = new DimseResponse(dimse.getCStoreResponse(command));
 
-                if (response.getStatus() == dimseStatus_t.success)
-                    Toast.makeText(DICOMViewActivity.this, "Success: File is sent!", Toast.LENGTH_LONG).show();
-            });
+            if (response.getStatus() == dimseStatus_t.success)
+                Toast.makeText(DICOMViewActivity.this, "Success: File is sent!", Toast.LENGTH_LONG).show();
+        });
     }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b){
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            AtomicReference<Float> scale = new AtomicReference<>((float) 0);
+
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.radio_zoom:
+                        mImageView.setOnTouchListener((view, event) -> {
+                            int action = event.getAction();
+                            if (action == MotionEvent.ACTION_DOWN)
+                                savedMatrix.set(matrix);
+                            start.set(event.getX(), event.getY());
+                            Log.d(TAG, "mode=DRAG");
+                            mode = DRAG;
+                            if (action == MotionEvent.ACTION_MOVE) {
+                                if (mode == DRAG) {
+                                    windowCenter = windowCenter;
+                                    windowWidth = windowWidth;
+                                    matrix.set(savedMatrix);
+                                    matrix.postTranslate(event.getX() - start.x, event.getY() - start.y);
+                                } else if (mode == ZOOM) {
+                                    double newDist = spacing(event);
+                                    Log.d(TAG, "newDist=" + newDist);
+                                    if (newDist > 5f) {
+                                        matrix.set(savedMatrix);
+                                        scale.set((float) (newDist / oldDist));
+                                        matrix.postScale(scale.get(), scale.get(), mid.x, mid.y);
+                                    }
+                                }
+                            }
+                            if (action == MotionEvent.ACTION_UP) {
+
+                            }
+                            return false;
+                        });
+                        break;
+
+                    case R.id.radio_light:
+                        mImageView.setOnTouchListener((view, motionEvent) -> {
+                            int action = motionEvent.getAction();
+
+                            int curX = (int) motionEvent.getX();
+                            int curY = (int) motionEvent.getY();
+
+                            if (action == MotionEvent.ACTION_DOWN) {
+                                tmpCenter = curX;
+                                tmpWidth = curY;
+                            } else if (action == MotionEvent.ACTION_MOVE) {
+                                windowCenter += curX - tmpCenter;
+                                windowWidth += curY - tmpWidth;
+
+                                mBusy = true;
+
+                                mDICOMFileLoader = new DICOMFileLoader(loadingHandler, mFileArray[mCurrentFileIndex], true);
+                                mDICOMFileLoader.start();
+                            } else if (action == MotionEvent.ACTION_UP) {
+                                tmpCenter = 0;
+                                tmpWidth = 0;
+                            }
+                            return false;
+                        });
+                        break;
+                }
+            }
+        });
+
+    }
+
+
+    private double spacing(MotionEvent event)
+    {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        return Math.sqrt(x * x + y * y);
+    }
+
+
+    private void midPoint(PointF point, MotionEvent event)
+    {
+        float x = event.getX(0) + event.getX(1);
+        float y = event.getY(0) + event.getY(1);
+        point.set(x / 2, y / 2);
+    }
+
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -273,9 +371,7 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-        intent.putExtra("isSearch", true);
-        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -633,14 +729,14 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
                     // Show an alert dialog
                     Toast.makeText(getApplicationContext(), "[ERROR] Loading file: " +
                             "OutOfMemoryError: During the loading of image ("
-                                    + mFileArray[mCurrentFileIndex].getName()
-                                    + "), an out of memory error occurred.\n\n"
-                                    + "Your file is too large for your Android system. You can"
-                                    + " try to cache the image in the file chooser."
-                                    + " If the error occured again, then the image cannot be displayed"
-                                    + " on your device.\n"
-                                    + "Try to use the Droid Dicom Viewer desktop file cacher software"
-                                    + " (not available yet).", Toast.LENGTH_LONG).show();
+                            + mFileArray[mCurrentFileIndex].getName()
+                            + "), an out of memory error occurred.\n\n"
+                            + "Your file is too large for your Android system. You can"
+                            + " try to cache the image in the file chooser."
+                            + " If the error occured again, then the image cannot be displayed"
+                            + " on your device.\n"
+                            + "Try to use the Droid Dicom Viewer desktop file cacher software"
+                            + " (not available yet).", Toast.LENGTH_LONG).show();
 
                     break;
             }
