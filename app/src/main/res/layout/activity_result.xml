@@ -3,31 +3,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#5A595B"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/light"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/light"
-            android:gravity="center" />
-
-        <Button
-            android:id="@+id/zoom"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/zoom"
-            android:gravity="center" />
-
-    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_weight="9">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -38,18 +18,43 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <Button
+                    android:id="@+id/button_query"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:textSize="10dp"
+                    android:text="Query"
+                    />
+
                 <ImageView
                     android:id="@+id/imageView"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:layout_height="280dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:layout_gravity="center" />
+
+                <Button
+                    android:id="@+id/button_result"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:textSize="10dp"
+                    android:text="Result"
+                    />
 
                 <ImageView
                     android:id="@+id/result"
-                    android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:layout_gravity="center" />
+                    android:layout_height="280dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="10dp" />
 
             </LinearLayout>
 
@@ -62,7 +67,8 @@
         android:id="@+id/navigationToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#99808080">
+        android:background="#99808080"
+        android:layout_weight="1">
 
         <Button
             android:id="@+id/previousImageButton"
