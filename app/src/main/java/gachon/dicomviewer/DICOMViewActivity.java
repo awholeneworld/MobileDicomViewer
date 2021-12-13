@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
@@ -35,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, CompoundButton.OnCheckedChangeListener {
@@ -47,16 +49,18 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
     private RadioButton radio_windowing;
     private RadioButton radio_zoom;
     private RadioGroup radioGroup;
-    private Button windowing; // Control button1
-    private Button zoom; // Control button2
     private Button mPreviousButton; // Previous button.
     private Button mNextButton; // Next button.
     private Button sendButton; // Send button for transmitting the DICOM file to PACS.
     private Uri mCurrentUri = null; // Current uri of DICOM file to process
     private File mCurrentFile = null; // Current DICOM file to process
     private File[] mFileArray = null; // The array of DICOM images in the folder.
+    private int mFileArrayLength; // Length of loaded DICOM files list
     private int mCurrentFileIndex; // The index of the current file.
-    private DataSet loadedData; // A single DICOM file container
+    static DataSet loadedData; // A single DICOM data container
+    static DataSet retrievedData;
+    static ArrayList<DataSet> retrievedDataList;
+    static int retrievedInstanceNumber;
     private DICOMFileLoader mDICOMFileLoader = null; // DICOM file loader thread.
     private boolean isPatientNameLoaded = false;
     private boolean isSearch;
@@ -83,8 +87,6 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         mIndexTextView = findViewById(R.id.imageIndexView);
         mIndexSeekBar = findViewById(R.id.seriesSeekBar);
         sendButton = findViewById(R.id.send_file_button);
-        windowing = findViewById(R.id.windowing);
-        zoom = findViewById(R.id.zoom);
         radioGroup = findViewById(R.id.radioGroup);
         radio_windowing = findViewById(R.id.radio_windowing);
         radio_zoom = findViewById(R.id.radio_zoom);
@@ -95,10 +97,6 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
 
         radio_windowing.setOnCheckedChangeListener((CompoundButton.OnCheckedChangeListener) this);
         radio_zoom.setOnCheckedChangeListener((CompoundButton.OnCheckedChangeListener) this);
-
-        // If the selected menu is not search, hide the send button.
-        if (!isSearch) sendButton.setVisibility(View.INVISIBLE);
-        else sendButton.setOnClickListener(search);
 
         // First thing: Load the Imebra library
         System.loadLibrary("imebra_lib");
@@ -119,6 +117,10 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
             if (intent != null && intent.getExtras() != null) {
                 fileName = intent.getStringExtra("DICOMFileName");
                 isSearch = intent.getBooleanExtra("isSearch", false);
+
+                // If the selected menu is not search, hide the send button.
+                if (!isSearch) sendButton.setVisibility(View.INVISIBLE);
+                else sendButton.setOnClickListener(search);
             }
         }
 
@@ -129,21 +131,6 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         // Else load the file
         else
             loadFiles(fileName);
-    }
-    
-    @Override
-    @SuppressLint({"NonConstantResourceId", "ClickableViewAccessibility"})
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b){
-        radioGroup.setOnCheckedChangeListener((radioGroup, i) -> {
-            switch (i) {
-                case R.id.radio_windowing:
-                    mImageView.setOnTouchListener(windowingListener);
-                    break;
-                case R.id.radio_zoom:
-                    mImageView.setOnTouchListener(zoomingListener);
-                    break;
-            }
-        });
     }
 
     @Override
@@ -269,7 +256,7 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
                 mPreviousButton.setVisibility(View.INVISIBLE);
                 mNextButton.setVisibility(View.VISIBLE);
 
-            } else if (mCurrentFileIndex == (mFileArray.length - 1)) {
+            } else if (mCurrentFileIndex == (mFileArrayLength - 1)) {
 
                 mNextButton.setVisibility(View.INVISIBLE);
                 mPreviousButton.setVisibility(View.VISIBLE);
@@ -303,6 +290,25 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
 
     }
 
+    @Override
+    @SuppressLint({"NonConstantResourceId", "ClickableViewAccessibility"})
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b){
+        radioGroup.setOnCheckedChangeListener((radioGroup, i) -> {
+            switch (i) {
+                case R.id.radio_windowing:
+                    radio_windowing.setTextColor(0xFF2196F3);
+                    radio_zoom.setTextColor(Color.WHITE);
+                    mImageView.setOnTouchListener(windowingListener);
+                    break;
+                case R.id.radio_zoom:
+                    radio_zoom.setTextColor(0xFF2196F3);
+                    radio_windowing.setTextColor(Color.WHITE);
+                    mImageView.setOnTouchListener(zoomingListener);
+                    break;
+            }
+        });
+    }
+
     /**
      * Get the index of the file in the files array.
      * @param file
@@ -314,7 +320,7 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         if (mFileArray == null)
             throw new NullPointerException("The files array is null.");
 
-        for (int i = 0; i < mFileArray.length; i++)
+        for (int i = 0; i < mFileArrayLength; i++)
             if (mFileArray[i].getName().equals(file.getName()))
                 return i;
 
@@ -328,6 +334,9 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
 
         // Get the files in the parent of the current file
         mFileArray = mCurrentFile.getParentFile().listFiles(new DICOMFileFilter());
+
+        // Get the length of the files list
+        mFileArrayLength = mFileArray.length;
 
         // Sort the files array
         Arrays.sort(mFileArray, (o1, o2) -> {
@@ -355,7 +364,7 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
 
         // If the files array is null or its length is less than 1,
         // there is an error because it must contain at least 1 file (the current file).
-        if (mFileArray == null || mFileArray.length < 1)
+        if (mFileArray == null || mFileArrayLength < 1)
             Toast.makeText(getApplicationContext(), "[ERROR] Loading file: The file cannot be loaded.\n\n" +
                     "The directory contains no DICOM files.", Toast.LENGTH_LONG).show();
         else {
@@ -365,14 +374,14 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
 
             // If the current file index is negative
             // or greater or equal to the files array length there is an error.
-            if (mCurrentFileIndex < 0 || mCurrentFileIndex >= mFileArray.length)
+            if (mCurrentFileIndex < 0 || mCurrentFileIndex >= mFileArrayLength)
                 Toast.makeText(getApplicationContext(), "[ERROR] Loading file: The file cannot be loaded.\n\n" +
                         "The file is not in the directory.", Toast.LENGTH_LONG).show();
                 // Else initialize views and navigation bar
             else {
 
                 // Check if the seek bar must be shown or not
-                if (mFileArray.length == 1)
+                if (mFileArrayLength == 1)
                     mNavigationBar.setVisibility(View.INVISIBLE);
                 else {
 
@@ -382,15 +391,15 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
 
                     // Display the files count and set the seek bar maximum
                     TextView countTextView = findViewById(R.id.imageCountView);
-                    countTextView.setText(String.valueOf(mFileArray.length));
-                    mIndexSeekBar.setMax(mFileArray.length - 1);
+                    countTextView.setText(String.valueOf(mFileArrayLength));
+                    mIndexSeekBar.setMax(mFileArrayLength - 1);
                     mIndexSeekBar.setProgress(mCurrentFileIndex);
 
                     // Set the visibility of the previous button
                     if (mCurrentFileIndex == 0)
                         mPreviousButton.setVisibility(View.INVISIBLE);
 
-                    else if (mCurrentFileIndex == (mFileArray.length - 1))
+                    else if (mCurrentFileIndex == (mFileArrayLength - 1))
                         mNextButton.setVisibility(View.INVISIBLE);
                 }
             }
@@ -732,13 +741,13 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
 
         // If the current file index is the last file index,
         // there is no next file in the files array
-        // We add the greater or equal to (mFileArray.length - 1)
+        // We add the greater or equal to (mFileArrayLength - 1)
         // because it is safer
-        if (mCurrentFileIndex >= (mFileArray.length - 1)) {
+        if (mCurrentFileIndex >= (mFileArrayLength - 1)) {
 
             // Not necessary but safer, because we don't know
             // how the code will be used in the future
-            mCurrentFileIndex = (mFileArray.length - 1);
+            mCurrentFileIndex = (mFileArrayLength - 1);
 
             // If for a unknown reason the previous button is
             // visible => hide it
@@ -763,7 +772,7 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         mIndexTextView.setText(String.valueOf(mCurrentFileIndex + 1));
         mIndexSeekBar.setProgress(mCurrentFileIndex);
 
-        if (mCurrentFileIndex == (mFileArray.length - 1))
+        if (mCurrentFileIndex == (mFileArrayLength - 1))
             mNextButton.setVisibility(View.INVISIBLE);
 
         // The previous button is automatically set to visible
@@ -830,9 +839,10 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
     View.OnClickListener search = v -> {
         // TODO: Put your PC IP address which is connected to WiFi.
         // TODO: Do not commit when your PC IP address is written.
+
         try {
             // Allocate a TCP stream that connects to the DICOM SCP
-            TCPStream tcpStream = new TCPStream(new TCPActiveAddress("Address", "8104"));
+            TCPStream tcpStream = new TCPStream(new TCPActiveAddress("IP Address of PC", "8104"));
 
             // Allocate a stream reader and a writer that use the TCP stream
             StreamReader readSCU = new StreamReader(tcpStream.getStreamInput());
@@ -887,6 +897,9 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
                     // Receive commands via the dimse service
                     dimse = new DimseService(scp);
 
+                    // Initialize the list to get data
+                    retrievedDataList = new ArrayList<>();
+
                     // Receive commands until the association is closed
                     for(;;) {
 
@@ -899,16 +912,23 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
                         DataSet payload = command.getPayloadDataSet();
 
                         // Do something with the payload
-                        Toast.makeText(this, "Success: Data has been received-" + payload.toString(), Toast.LENGTH_LONG).show();
+                        retrievedDataList.add(payload);
 
                         // Send a response
                         dimse.sendCommandOrResponse(new CStoreResponse(command, dimseStatusCode_t.success));
                     }
 
-                } catch (Exception e){
+                } catch (Exception e) {
                     // The association has been closed
                     Log.d("TCP Error", e.toString());
                     Toast.makeText(this, "Receive Success: The input stream now has been closed", Toast.LENGTH_LONG).show();
+
+                    retrievedData = retrievedDataList.get(0);
+                    retrievedDataList.remove(0);
+                    retrievedInstanceNumber = Integer.parseInt(retrievedData.getString(new TagId(0x20, 0x13), 0));
+
+                    Intent intent = new Intent(getApplicationContext(), DICOMSearchResultActivity.class);
+                    startActivity(intent);
                 }
             }
 

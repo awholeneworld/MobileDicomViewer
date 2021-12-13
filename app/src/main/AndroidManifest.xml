@@ -42,7 +42,7 @@
             android:label="@string/app_name">
         </activity>
 
-        <activity android:name="gachon.dicomviewer.DICOMSearchActivity">
+        <activity android:name="gachon.dicomviewer.DICOMSearchResultActivity">
 
         </activity>
 

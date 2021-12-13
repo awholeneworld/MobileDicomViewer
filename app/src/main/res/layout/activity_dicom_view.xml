@@ -10,65 +10,43 @@
         android:orientation="horizontal"
         android:background="#5A595B">
 
-        <Button
-            android:id="@+id/windowing"
-            android:layout_width="0dp"
-            android:layout_height="70dp"
-            android:layout_weight="1"
-            android:paddingBottom="0dp"
-            android:gravity="center"
-            android:textSize="5dp"
-            android:text="Windowing"
-            android:drawableTop="@drawable/light" />
-
-        <Button
-            android:id="@+id/zoom"
-            android:layout_width="0dp"
-            android:layout_height="70dp"
-            android:layout_weight="1"
-            android:paddingBottom="0dp"
-            android:gravity="center"
-            android:textSize="5dp"
-            android:text="Zoom/Pan"
-            android:drawableTop="@drawable/zoom" />
-
-        <View
-            android:layout_width="240dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#5A595B">
-
         <RadioGroup
             android:id="@+id/radioGroup"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="#04FFFFFF"
+            android:orientation="horizontal">
 
             <RadioButton
                 android:id="@+id/radio_windowing"
                 android:layout_width="0dp"
-                android:layout_height="20dp"
+                android:layout_height="65dp"
                 android:layout_weight="1"
-                android:text="W" />
+                android:button="@null"
+                android:checked="true"
+                android:drawableTop="@drawable/light"
+                android:gravity="center"
+                android:paddingBottom="0dp"
+                android:textColor="#2196F3"
+                android:textSize="7dp"
+                android:text="Windowing" />
 
             <RadioButton
                 android:id="@+id/radio_zoom"
                 android:layout_width="0dp"
-                android:layout_height="20dp"
+                android:layout_height="65dp"
                 android:layout_weight="1"
-                android:text="Z/P" />
+                android:button="@null"
+                android:drawableTop="@drawable/zoom"
+                android:gravity="center"
+                android:paddingBottom="0dp"
+                android:textSize="7dp"
+                android:text="Zoom/Pan" />
 
             <View
                 android:layout_width="240dp"
                 android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
 
         </RadioGroup>
 

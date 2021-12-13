@@ -5,12 +5,12 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="9">
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -20,38 +20,30 @@
                 <Button
                     android:id="@+id/button_query"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="32dp"
                     android:gravity="center"
                     android:textSize="10dp"
                     android:text="Query" />
 
                 <ImageView
-                    android:id="@+id/imageView"
+                    android:id="@+id/queryImage"
                     android:layout_width="match_parent"
-                    android:layout_height="280dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_height="350dp"
                     android:layout_gravity="center" />
 
                 <Button
                     android:id="@+id/button_result"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="32dp"
                     android:gravity="center"
                     android:textSize="10dp"
                     android:text="Result" />
 
                 <ImageView
-                    android:id="@+id/result"
+                    android:id="@+id/retrievedImage"
                     android:layout_width="match_parent"
-                    android:layout_height="280dp"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_height="350dp"
+                    android:layout_gravity="center" />
 
             </LinearLayout>
 
