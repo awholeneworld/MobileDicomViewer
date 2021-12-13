@@ -3,7 +3,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,8 +23,7 @@
                     android:layout_height="30dp"
                     android:gravity="center"
                     android:textSize="10dp"
-                    android:text="Query"
-                    />
+                    android:text="Query" />
 
                 <ImageView
                     android:id="@+id/imageView"
@@ -43,8 +41,7 @@
                     android:layout_height="30dp"
                     android:gravity="center"
                     android:textSize="10dp"
-                    android:text="Result"
-                    />
+                    android:text="Result" />
 
                 <ImageView
                     android:id="@+id/result"
@@ -61,7 +58,6 @@
         </ScrollView>
 
     </FrameLayout>
-
 
     <LinearLayout
         android:id="@+id/navigationToolbar"
@@ -139,6 +135,5 @@
             android:onClick="nextImage" />
 
     </LinearLayout>
-
 
 </LinearLayout>

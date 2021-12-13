@@ -181,7 +181,6 @@ public class FileChooseActivity extends ListActivity {
                     // Open the DICOM Viewer
                     Intent intent = new Intent(this, DICOMViewActivity.class);
                     intent.putExtra("DICOMFileName", mTopDirectory.getPath() + "/" + itemName);
-                    intent.putExtra("FileCount", mTotal);
                     intent.putExtra("isSearch", isSearch);
                     startActivity(intent);
                 }
