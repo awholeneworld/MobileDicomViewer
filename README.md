@@ -14,3 +14,7 @@ which is again based on https://github.com/nelsonjchen/droid-dicom-viewer
 
 ## PACS Server used - "XNAT"
 - https://www.xnat.org/
+
+## Demo Videos  
+- DICOM Viewer: https://youtu.be/-VRV0BsljaI
+- DICOM Viewer with PACS: https://youtu.be/eEcZI1aZUvs
