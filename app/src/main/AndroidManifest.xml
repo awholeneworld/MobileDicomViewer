@@ -46,6 +46,10 @@
 
         </activity>
 
+        <activity android:name="gachon.dicomviewer.MainActivity">
+
+        </activity>
+
     </application>
 
 </manifest>

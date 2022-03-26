@@ -35,6 +35,11 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        chatbot.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+        });
+
         finish.setOnClickListener(v -> {
             finishAndRemoveTask();
             Toast.makeText(getApplicationContext(), "Thank you for using Dicom Viewer!", Toast.LENGTH_LONG).show();
