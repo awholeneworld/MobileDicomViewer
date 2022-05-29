@@ -52,14 +52,7 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Patient Name" />
-
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/imageFrame"
         android:layout_width="match_parent"
         android:layout_height="410dp">
@@ -71,7 +64,32 @@
             app:zoomage_maxScale="8"
             app:zoomage_minScale="0.6" />
 
-    </FrameLayout>
+        <TextView
+            android:id="@+id/patientName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Patient Name" />
+
+        <TextView
+            android:id="@+id/windowLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_above="@id/windowWidth"
+            android:gravity="center"
+            android:text="L:" />
+
+        <TextView
+            android:id="@+id/windowWidth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:text="W:" />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/navigationToolbar"

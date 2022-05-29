@@ -41,8 +41,10 @@ import java.util.Arrays;
 
 public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, CompoundButton.OnCheckedChangeListener {
 
+    private TextView mPatientName; // Used to display the patient name
+    private TextView mWindowLevel; // Used to display the window level
+    private TextView mWindowWidth; // Used to display the window width
     private ZoomageView mImageView; // Used to display the image
-    private TextView mTextView; // Used to display the patient name
     private LinearLayout mNavigationBar; // Layout representing the series navigation bar
     private SeekBar mIndexSeekBar; // Series seek bar.
     private TextView mIndexTextView; // Image index TextView.
@@ -79,7 +81,9 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dicom_view);
 
-        mTextView = findViewById(R.id.textView);
+        mPatientName = findViewById(R.id.patientName);
+        mWindowLevel = findViewById(R.id.windowLevel);
+        mWindowWidth = findViewById(R.id.windowWidth);
         mImageView = findViewById(R.id.imageView);
         mNavigationBar = findViewById(R.id.navigationToolbar);
         mPreviousButton = findViewById(R.id.previousImageButton);
@@ -507,7 +511,10 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
                                         .getAlphabeticRepresentation();
 
                                 if (patientName.length() != 0)
-                                    mTextView.setText(patientName);
+                                    mPatientName.setText(patientName);
+
+                                mWindowLevel.setText("L: " + windowCenter);
+                                mWindowWidth.setText("W: " + windowWidth);
 
                                 isPatientNameLoaded = true;
                             }
@@ -580,6 +587,10 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
                             VOILUT voilut = new VOILUT(description);
                             chain.addTransform(voilut);
                         }
+
+                        // Update windowing values
+                        mWindowLevel.setText("L: " + windowCenter);
+                        mWindowWidth.setText("W: " + windowWidth);
 
                         // Build a stream of bytes that can be handled by android's Bitmap class using a DrawBitmap
                         DrawBitmap drawBitmap = new DrawBitmap(chain);
@@ -839,7 +850,66 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
     View.OnClickListener search = v -> {
         // TODO: Put your PC IP address which is connected to WiFi.
         // TODO: Do not commit when your PC IP address is written.
+        try {
+            // Start SCP service
+            // Bind the port 1024 to a listening socket
+            TCPListener tcpListener = new TCPListener(new TCPPassiveAddress("", "1024"));
 
+            // Wait until a connection arrives or terminate() is called on the tcpListener
+            // TODO: Call tcpListener.terminate(); when 8 seconds pass.
+            TCPStream tcpStream = new TCPStream(tcpListener.waitForConnection());
+
+            // tcpStream now represents the connected socket
+            // Allocate a stream reader and a writer to read and write on the connected socket
+            StreamReader readSCU = new StreamReader(tcpStream.getStreamInput());
+            StreamWriter writeSCU = new StreamWriter(tcpStream.getStreamOutput());
+
+            // Specify which presentation contexts we accept
+            PresentationContext context = new PresentationContext(imebra.getUidCTImageStorage_1_2_840_10008_5_1_4_1_1_2());
+            context.addTransferSyntax(imebra.getUidExplicitVRLittleEndian_1_2_840_10008_1_2_1());
+            PresentationContexts presentationContexts = new PresentationContexts();
+            presentationContexts.addPresentationContext(context);
+
+            // The AssociationSCP constructor will negotiate the assocation
+            AssociationSCP scp = new AssociationSCP("SCP", 1, 1, presentationContexts, readSCU, writeSCU, 0, 10);
+
+            // Receive commands via the dimse service
+            DimseService dimse = new DimseService(scp);
+
+            // Initialize the list to get data
+            retrievedDataList = new ArrayList<>();
+
+            // Receive commands until the association is closed
+            for(;;) {
+
+                // We assume we are going to receive a C-Store. Normally you should check the command type
+                // (using DimseCommand::getCommandType()) and then cast to the proper class.
+                CStoreCommand command = new CStoreCommand(dimse.getCommand().getAsCStoreCommand());
+
+                // The store command has a payload. We can do something with it, or we can
+                // use the methods in CStoreCommand to get other data sent by the peer
+                DataSet payload = command.getPayloadDataSet();
+
+                // Do something with the payload
+                retrievedDataList.add(payload);
+
+                // Send a response
+                dimse.sendCommandOrResponse(new CStoreResponse(command, dimseStatusCode_t.success));
+            }
+
+        } catch (Exception e){
+            // The association has been closed
+            Log.d("TCP Error", e.toString());
+            Toast.makeText(this, "Receive Success: The input stream now has been closed", Toast.LENGTH_LONG).show();
+
+            retrievedData = retrievedDataList.get(0);
+            retrievedDataList.remove(0);
+            retrievedInstanceNumber = Integer.parseInt(retrievedData.getString(new TagId(0x20, 0x13), 0));
+
+            Intent intent = new Intent(getApplicationContext(), DICOMSearchResultActivity.class);
+            startActivity(intent);
+        }
+        /*
         try {
             // Allocate a TCP stream that connects to the DICOM SCP
             TCPStream tcpStream = new TCPStream(new TCPActiveAddress("IP Address of PC", "8104"));
@@ -935,5 +1005,6 @@ public class DICOMViewActivity extends AppCompatActivity implements SeekBar.OnSe
         } catch (Exception e) {
             Toast.makeText(this, "Exception: Sending file failed!", Toast.LENGTH_LONG).show();
         }
+         */
     };
 }

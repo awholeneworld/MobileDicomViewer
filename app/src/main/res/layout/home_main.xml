@@ -22,19 +22,17 @@
         android:textColor="#FFFFFF"
         android:textSize="15dp" />
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5"
         android:background="#333030">
 
-
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="150dp"
             android:layout_marginHorizontal="40dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="40dp"
             android:layout_weight="5"
             android:orientation="vertical">
 
@@ -63,7 +61,7 @@
             android:layout_width="0dp"
             android:layout_height="150dp"
             android:layout_marginHorizontal="40dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="40dp"
             android:layout_weight="5"
             android:orientation="vertical">
 
@@ -156,7 +154,5 @@
         </LinearLayout>
 
     </LinearLayout>
-
-
 
 </LinearLayout>
