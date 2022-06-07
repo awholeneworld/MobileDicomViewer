@@ -19,25 +19,32 @@ which is again based on https://github.com/nelsonjchen/droid-dicom-viewer
 - DICOM Viewer: https://youtu.be/-VRV0BsljaI
 - DICOM Viewer with PACS: https://youtu.be/eEcZI1aZUvs
 
+
 # How to use  
-<img src="https://user-images.githubusercontent.com/47418925/146016666-c2d2c91f-5a99-4502-afc2-4dd830510bf8.png"  width="300" height="600"/>
+<img src="https://user-images.githubusercontent.com/47418925/172337851-4ec7c62c-6c6c-4d26-9631-6af6f9d5043b.png"  width="700" height="600"/>
 
-## There are two sections.  
-- One is to view DICOM files and the other is to search the similar image with your DICOM image.  
+## There are four sections.  
 - If you want to view your DICOM files, select the "Diagnose" button.  
-- If you want to search the image similar with yours, select the "Search" button.  
-<img src="https://user-images.githubusercontent.com/47418925/146016727-2f981728-1e1f-428b-8558-22739657ddd4.png"  width="300" height="600"/>
+- If you want to search the DICOM image similar with yours, select the "Search" button.  
+- If you want to get some information about the application, select the "Chatbot" button.  
+- If you want to quit the application, press the "Close" button.  
 
-## Diagnose section  
+<img src="https://user-images.githubusercontent.com/47418925/172338876-d6d432af-eae7-4335-9889-b5a8be0e2a19.png"  width="350" height="600"/>
+
+## 1. Diagnose section  
 - In the "Diagnose" section, you can view your series of DICOM files with a seek bar.  
 - You can change window center by scrolling up and down and window level by scrolling left and right.  
 - Also, you can zoom it in and out with panning.  
-<img src="https://user-images.githubusercontent.com/47418925/146017836-2af3e867-2daa-47de-b196-7a14521619f8.png"  width="300" height="600"/>
 
-## Search section  
+<img src="https://user-images.githubusercontent.com/47418925/146017836-2af3e867-2daa-47de-b196-7a14521619f8.png"  width="300" height="600"/>  <img src="https://user-images.githubusercontent.com/47418925/146019367-e747287a-b3a4-4f57-aea8-69ad16bf910b.png"  width="300" height="600"/>
+
+## 2. Search section  
 - In the "Search" section, everything is same as the "Diagnose" section's, except for the similar image search function.  
 - First, you need to be connected to your own XNAT(PACS) to use this function.
 - To search your specific image, show it on your screen using the seek bar.  
 - Then, press the "IMAGE SEARCH" button.
 - In a moment, the result will be retrieved as the following screenshot.  
-<img src="https://user-images.githubusercontent.com/47418925/146019367-e747287a-b3a4-4f57-aea8-69ad16bf910b.png"  width="300" height="600"/>
+
+![그림3](https://user-images.githubusercontent.com/47418925/172342429-4531f3ff-59a7-4263-afd0-2d55f9242fdb.gif)
+
+## 3. Chatbot section  
