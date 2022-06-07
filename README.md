@@ -21,7 +21,7 @@ which is again based on https://github.com/nelsonjchen/droid-dicom-viewer
 
 
 # How to use  
-<img src="https://user-images.githubusercontent.com/47418925/172337851-4ec7c62c-6c6c-4d26-9631-6af6f9d5043b.png"  width="700" height="600"/>
+<img src="https://user-images.githubusercontent.com/47418925/172337851-4ec7c62c-6c6c-4d26-9631-6af6f9d5043b.png" width="700" height="600"/>
 
 ## There are four sections.  
 - If you want to view your DICOM files, select the "Diagnose" button.  
@@ -30,7 +30,7 @@ which is again based on https://github.com/nelsonjchen/droid-dicom-viewer
 - If you want to quit the application, press the "Close" button.  
 
 <br><br><br>
-<img src="https://user-images.githubusercontent.com/47418925/172338876-d6d432af-eae7-4335-9889-b5a8be0e2a19.png"  width="350" height="600"/>
+<img src="https://user-images.githubusercontent.com/47418925/172338876-d6d432af-eae7-4335-9889-b5a8be0e2a19.png" width="350" height="600"/>
 
 ## 1. Diagnose section  
 - In the "Diagnose" section, you can view your series of DICOM files with a seek bar.  
@@ -38,7 +38,7 @@ which is again based on https://github.com/nelsonjchen/droid-dicom-viewer
 - Also, you can zoom it in and out with panning.  
 
 <br><br><br>
-<img src="https://user-images.githubusercontent.com/47418925/146017836-2af3e867-2daa-47de-b196-7a14521619f8.png"  width="300" height="600"/>  <img src="https://user-images.githubusercontent.com/47418925/146019367-e747287a-b3a4-4f57-aea8-69ad16bf910b.png"  width="300" height="600"/>
+<img src="https://user-images.githubusercontent.com/47418925/146017836-2af3e867-2daa-47de-b196-7a14521619f8.png" width="300" height="600"/>  <img src="https://user-images.githubusercontent.com/47418925/146019367-e747287a-b3a4-4f57-aea8-69ad16bf910b.png" width="300" height="600"/>
 
 ## 2. Search section  
 - In the "Search" section, everything is same as the "Diagnose" section's, except for the similar image search function.  
@@ -48,7 +48,7 @@ which is again based on https://github.com/nelsonjchen/droid-dicom-viewer
 - In a moment, the result will be retrieved as the following screenshot.  
 
 <br><br><br>
-<img src="https://user-images.githubusercontent.com/47418925/172346203-5e53a68f-0992-4634-b92e-10466f8931a3.gif"/>
+<img src="https://user-images.githubusercontent.com/47418925/172346203-5e53a68f-0992-4634-b92e-10466f8931a3.gif" width="300" height="600"/>
 
 ## 3. Chatbot section  
 - In the "Search" section, you can ask the chatbot about the application.
