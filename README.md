@@ -29,6 +29,7 @@ which is again based on https://github.com/nelsonjchen/droid-dicom-viewer
 - If you want to get some information about the application, select the "Chatbot" button.  
 - If you want to quit the application, press the "Close" button.  
 
+<br><br><br>
 <img src="https://user-images.githubusercontent.com/47418925/172338876-d6d432af-eae7-4335-9889-b5a8be0e2a19.png"  width="350" height="600"/>
 
 ## 1. Diagnose section  
@@ -36,6 +37,7 @@ which is again based on https://github.com/nelsonjchen/droid-dicom-viewer
 - You can change window center by scrolling up and down and window level by scrolling left and right.  
 - Also, you can zoom it in and out with panning.  
 
+<br><br><br>
 <img src="https://user-images.githubusercontent.com/47418925/146017836-2af3e867-2daa-47de-b196-7a14521619f8.png"  width="300" height="600"/>  <img src="https://user-images.githubusercontent.com/47418925/146019367-e747287a-b3a4-4f57-aea8-69ad16bf910b.png"  width="300" height="600"/>
 
 ## 2. Search section  
@@ -45,6 +47,8 @@ which is again based on https://github.com/nelsonjchen/droid-dicom-viewer
 - Then, press the "IMAGE SEARCH" button.
 - In a moment, the result will be retrieved as the following screenshot.  
 
-![그림3](https://user-images.githubusercontent.com/47418925/172342429-4531f3ff-59a7-4263-afd0-2d55f9242fdb.gif)
+<br><br><br>
+<img src="https://user-images.githubusercontent.com/47418925/172346203-5e53a68f-0992-4634-b92e-10466f8931a3.gif"/>
 
 ## 3. Chatbot section  
+- In the "Search" section, you can ask the chatbot about the application.
